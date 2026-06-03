@@ -1,49 +1,49 @@
-import type { Video } from '@/types/holodex'
-import { Badge } from '@/components/ui/badge'
-import { cn } from '@/lib/utils'
+import type { Video } from "@/types/holodex";
+import { Badge } from "@/components/ui/badge";
+import { cn } from "@/lib/utils";
 
 interface StreamCardProps {
-  video: Video
+  video: Video;
 }
 
 function formatViewers(count: number): string {
-  if (count >= 1000) return `${(count / 1000).toFixed(1)}K`
-  return String(count)
+  if (count >= 1000) return `${(count / 1000).toFixed(1)}K`;
+  return String(count);
 }
 
 function formatScheduled(dateStr: string): string {
-  const date = new Date(dateStr)
-  const now = new Date()
-  const diffMs = date.getTime() - now.getTime()
-  const diffHrs = Math.floor(diffMs / (1000 * 60 * 60))
-  const diffMins = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60))
+  const date = new Date(dateStr);
+  const now = new Date();
+  const diffMs = date.getTime() - now.getTime();
+  const diffHrs = Math.floor(diffMs / (1000 * 60 * 60));
+  const diffMins = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
 
-  if (diffHrs > 0) return `in ${diffHrs}h ${diffMins}m`
-  if (diffMins > 0) return `in ${diffMins}m`
-  return 'starting soon'
+  if (diffHrs > 0) return `in ${diffHrs}h ${diffMins}m`;
+  if (diffMins > 0) return `in ${diffMins}m`;
+  return "starting soon";
 }
 
 function getBranchColor(group?: string): string {
-  if (!group) return 'text-gray-400'
-  const g = group.toLowerCase()
-  if (g.includes('english')) return 'text-blue-400'
-  if (g.includes('indonesia')) return 'text-green-400'
-  if (g.includes('dev_is') || g.includes('devis')) return 'text-purple-400'
-  return 'text-red-400' // JP
+  if (!group) return "text-gray-400";
+  const g = group.toLowerCase();
+  if (g.includes("english")) return "text-blue-400";
+  if (g.includes("indonesia")) return "text-green-400";
+  if (g.includes("dev_is") || g.includes("devis")) return "text-purple-400";
+  return "text-red-400"; // JP
 }
 
 export default function StreamCard({ video }: StreamCardProps) {
-  const isLive = video.status === 'live'
-  const thumbnail = `https://img.youtube.com/vi/${video.id}/mqdefault.jpg`
-  const watchUrl = `https://www.youtube.com/watch?v=${video.id}`
-  const scheduledTime = video.start_scheduled ?? video.available_at
+  const isLive = video.status === "live";
+  const thumbnail = `https://img.youtube.com/vi/${video.id}/mqdefault.jpg`;
+  const watchUrl = `https://www.youtube.com/watch?v=${video.id}`;
+  const scheduledTime = video.start_scheduled ?? video.available_at;
 
   return (
     <a
       href={watchUrl}
       target="_blank"
       rel="noopener noreferrer"
-      className="group block rounded-xl overflow-hidden bg-white/5 border border-white/10 hover:border-white/25 transition-all duration-200 hover:-translate-y-0.5"
+      className="group block rounded-xl overflow-hidden bg-white/5 border border-white/10 hover:border-white/25 transition-all duration-200 hover:-translate-y-0.5 cursor-pointer"
     >
       {/* Thumbnail */}
       <div className="relative aspect-video overflow-hidden bg-black">
@@ -79,7 +79,9 @@ export default function StreamCard({ video }: StreamCardProps) {
             {video.title}
           </p>
           <div className="flex items-center gap-2 flex-wrap">
-            <span className={cn('text-xs', getBranchColor(video.channel.group))}>
+            <span
+              className={cn("text-xs", getBranchColor(video.channel.group))}
+            >
               {video.channel.english_name ?? video.channel.name}
             </span>
             {!isLive && scheduledTime && (
@@ -91,5 +93,5 @@ export default function StreamCard({ video }: StreamCardProps) {
         </div>
       </div>
     </a>
-  )
+  );
 }
