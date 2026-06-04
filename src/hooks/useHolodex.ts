@@ -44,6 +44,17 @@ export function useAllChannels() {
         }),
       ]);
       const all = [...page1, ...page2, ...page3];
+      console.log("Total:", all.length);
+      console.log("Sample:", JSON.stringify(all.slice(0, 5), null, 2));
+      // log any that look like official channels (no english_name or weird names)
+      console.log(
+        "Suspicious:",
+        JSON.stringify(
+          all.filter((c) => !c.english_name),
+          null,
+          2,
+        ),
+      );
       return all.sort((a, b) => {
         const nameA = (a.english_name ?? a.name).toLowerCase();
         const nameB = (b.english_name ?? b.name).toLowerCase();
