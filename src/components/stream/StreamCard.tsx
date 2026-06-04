@@ -23,12 +23,13 @@ function formatScheduled(dateStr: string): string {
   return "starting soon";
 }
 
-function getBranchColor(group?: string): string {
-  if (!group) return "text-gray-400";
-  const g = group.toLowerCase();
-  if (g.includes("english")) return "text-blue-400";
-  if (g.includes("indonesia")) return "text-green-400";
-  if (g.includes("dev_is") || g.includes("devis")) return "text-purple-400";
+function getBranchColor(channel: { name?: string; suborg?: string }): string {
+  const name = (channel.name ?? "").toLowerCase();
+  const suborg = (channel.suborg ?? "").toLowerCase();
+  if (name.includes("hololive-en")) return "text-blue-400";
+  if (name.includes("hololive-id")) return "text-green-400";
+  if (suborg.includes("dev_is") || name.includes("dev_is"))
+    return "text-purple-400";
   return "text-red-400"; // JP
 }
 
@@ -79,9 +80,7 @@ export default function StreamCard({ video }: StreamCardProps) {
             {video.title}
           </p>
           <div className="flex items-center gap-2 flex-wrap">
-            <span
-              className={cn("text-xs", getBranchColor(video.channel.group))}
-            >
+            <span className={cn("text-xs", getBranchColor(video.channel))}>
               {video.channel.english_name ?? video.channel.name}
             </span>
             {!isLive && scheduledTime && (
