@@ -33,16 +33,26 @@ export function useAllChannels() {
   return useQuery({
     queryKey: ["channels", "all"],
     queryFn: async (): Promise<Channel[]> => {
-      const [page1, page2] = await Promise.all([
-        getChannels({ org: "Hololive", limit: 50, offset: 0 }),
-        getChannels({ org: "Hololive", limit: 50, offset: 50 }),
+      const [page1, page2, page3] = await Promise.all([
+        getChannels({ org: "Hololive", limit: 50, offset: 0, type: "vtuber" }),
+        getChannels({ org: "Hololive", limit: 50, offset: 50, type: "vtuber" }),
+        getChannels({
+          org: "Hololive",
+          limit: 50,
+          offset: 100,
+          type: "vtuber",
+        }),
       ]);
-      return [...page1, ...page2];
+      const all = [...page1, ...page2, ...page3];
+      return all.sort((a, b) => {
+        const nameA = (a.english_name ?? a.name).toLowerCase();
+        const nameB = (b.english_name ?? b.name).toLowerCase();
+        return nameA.localeCompare(nameB);
+      });
     },
     staleTime: 10 * 60 * 1000,
   });
 }
-
 export function useChannel(id: string) {
   return useQuery({
     queryKey: ["channel", id],

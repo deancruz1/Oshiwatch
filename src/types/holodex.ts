@@ -58,4 +58,5 @@ export interface ChannelsParams {
   org?: string;
   limit?: number;
   offset?: number;
+  type?: string;
 }
