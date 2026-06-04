@@ -1,17 +1,31 @@
 import type { Branch } from "@/components/stream/BranchFilter";
 import type { Video, Channel } from "@/types/holodex";
 
+const EXCLUDED_GROUPS = ["Official", "Misc", "holo-n"];
+
 export function getChannelBranch(channel: Channel): Branch | null {
+  const group = (channel.group ?? "").toLowerCase();
   const name = (channel.name ?? "").toLowerCase();
-  const suborg = (channel.suborg ?? "").toLowerCase();
 
-  if (name.includes("holostars") || suborg.includes("holostars")) return null;
-  if (name.includes("hololive-en")) return "EN";
-  if (name.includes("hololive-id")) return "ID";
-  if (suborg.includes("dev_is") || name.includes("dev_is")) return "DEV_IS";
-  if (name.includes("hololive")) return "JP";
+  // Exclude official brand channels, misc, inactive
+  if (EXCLUDED_GROUPS.map((g) => g.toLowerCase()).includes(group)) return null;
+  if (channel.inactive) return null;
 
-  return null;
+  // Exclude Holostars
+  if (group.includes("holostars")) return null;
+
+  // Branch detection using group field
+  if (group.includes("dev_is")) return "DEV_IS";
+  if (group.includes("english")) return "EN";
+  if (
+    name.includes("hololive-id") ||
+    group.includes("indonesia") ||
+    group.includes("holoh3ro") ||
+    group.includes("gen (holoh3ro)")
+  )
+    return "ID";
+
+  return "JP";
 }
 
 export function getVideoBranch(video: Video): Branch | null {

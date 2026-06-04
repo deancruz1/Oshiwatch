@@ -14,6 +14,7 @@ export interface Channel {
   subscriber_count?: number;
   video_count?: number;
   description?: string;
+  inactive?: boolean;
 }
 
 export interface Video {
