@@ -1,38 +1,62 @@
-import { useQuery } from '@tanstack/react-query'
-import { getLiveVideos, getChannels, getChannel, getVideos } from '../api/holodex'
-import type { LiveVideosParams, VideosParams, ChannelsParams } from '../types/holodex'
+import { useQuery } from "@tanstack/react-query";
+import {
+  getLiveVideos,
+  getChannels,
+  getChannel,
+  getVideos,
+} from "../api/holodex";
+import type {
+  LiveVideosParams,
+  VideosParams,
+  ChannelsParams,
+  Channel,
+} from "../types/holodex";
 
 export function useLiveVideos(params: LiveVideosParams = {}) {
   return useQuery({
-    queryKey: ['live', params],
+    queryKey: ["live", params],
     queryFn: () => getLiveVideos(params),
-    refetchInterval: 5 * 60 * 1000, // poll every 5 minutes
+    refetchInterval: 5 * 60 * 1000,
     staleTime: 60 * 1000,
-  })
+  });
 }
 
 export function useChannels(params: ChannelsParams = {}) {
   return useQuery({
-    queryKey: ['channels', params],
+    queryKey: ["channels", params],
     queryFn: () => getChannels(params),
-    staleTime: 10 * 60 * 1000, // channels don't change often
-  })
+    staleTime: 10 * 60 * 1000,
+  });
+}
+
+export function useAllChannels() {
+  return useQuery({
+    queryKey: ["channels", "all"],
+    queryFn: async (): Promise<Channel[]> => {
+      const [page1, page2] = await Promise.all([
+        getChannels({ org: "Hololive", limit: 50, offset: 0 }),
+        getChannels({ org: "Hololive", limit: 50, offset: 50 }),
+      ]);
+      return [...page1, ...page2];
+    },
+    staleTime: 10 * 60 * 1000,
+  });
 }
 
 export function useChannel(id: string) {
   return useQuery({
-    queryKey: ['channel', id],
+    queryKey: ["channel", id],
     queryFn: () => getChannel(id),
     staleTime: 10 * 60 * 1000,
     enabled: !!id,
-  })
+  });
 }
 
 export function useVideos(params: VideosParams = {}) {
   return useQuery({
-    queryKey: ['videos', params],
+    queryKey: ["videos", params],
     queryFn: () => getVideos(params),
     staleTime: 5 * 60 * 1000,
     enabled: Object.keys(params).length > 0,
-  })
+  });
 }
