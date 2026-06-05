@@ -47,12 +47,11 @@ export function useAllChannels() {
       console.log(
         "Mel:",
         JSON.stringify(
-          all.find((c) => c.name.toLowerCase().includes("yozora")),
+          all.find((c) => c.english_name?.toLowerCase().includes("mel")),
           null,
           2,
         ),
       );
-
       return all.sort((a, b) => {
         const nameA = (a.english_name ?? a.name).toLowerCase();
         const nameB = (b.english_name ?? b.name).toLowerCase();
