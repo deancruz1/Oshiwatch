@@ -125,7 +125,6 @@ export default function TalentDetailPage() {
 
   return (
     <div className="max-w-screen-xl mx-auto px-6 py-8 space-y-8">
-      tsx
       <div>
         <Link
           to="/talents"
