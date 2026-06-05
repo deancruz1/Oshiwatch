@@ -44,14 +44,6 @@ export function useAllChannels() {
         }),
       ]);
       const all = [...page1, ...page2, ...page3];
-      console.log(
-        "Mel:",
-        JSON.stringify(
-          all.find((c) => c.english_name?.toLowerCase().includes("mel")),
-          null,
-          2,
-        ),
-      );
       return all.sort((a, b) => {
         const nameA = (a.english_name ?? a.name).toLowerCase();
         const nameB = (b.english_name ?? b.name).toLowerCase();
