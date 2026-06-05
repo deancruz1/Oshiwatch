@@ -17,7 +17,6 @@ function formatSubs(count?: number): string {
 
 function getGenLabel(group?: string): string {
   if (!group) return "";
-  // Shorten common ones
   const map: Record<string, string> = {
     "0th Generation": "Gen 0",
     "1st Generation": "Gen 1",
@@ -61,25 +60,17 @@ export default function TalentCard({
   return (
     <Link
       to={`/talents/${channel.id}`}
-      className={cn(
-        "group flex flex-col items-center text-center p-4 rounded-xl border transition-all duration-200 hover:-translate-y-0.5",
-        graduated
-          ? "bg-white/[0.02] border-white/5 opacity-60 hover:opacity-80"
-          : "bg-white/5 border-white/10 hover:border-white/25",
-      )}
+      className="group flex flex-col items-center text-center p-4 rounded-xl bg-white/5 border border-white/10 hover:border-white/25 hover:-translate-y-0.5 transition-all duration-200"
     >
       {/* Avatar */}
       <div className="relative mb-3">
         <img
           src={channel.photo}
           alt={channel.english_name ?? channel.name}
-          className={cn(
-            "w-16 h-16 rounded-full object-cover",
-            graduated && "grayscale",
-          )}
+          className="w-16 h-16 rounded-full object-cover"
           loading="lazy"
         />
-        {isLive && !graduated && (
+        {isLive && (
           <span className="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-red-500 border-2 border-gray-950 flex items-center justify-center">
             <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
           </span>
@@ -109,7 +100,7 @@ export default function TalentCard({
       )}
 
       {/* Sub count */}
-      {channel.subscriber_count && !graduated && (
+      {channel.subscriber_count && (
         <p className="text-xs text-gray-500">
           {formatSubs(channel.subscriber_count)} subs
         </p>

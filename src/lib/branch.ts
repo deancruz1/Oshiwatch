@@ -108,22 +108,23 @@ const GEN0_ORDER: Record<string, number> = {
   UC0TXe_LYZ4scaW2XMyi5_kw: 4, // AZKi
 };
 
+const MEKPARK_ORDER: Record<string, number> = {
+  UChpRPsAeSZn5DistGacR3iA: 0, // ACHRORA
+  UC3OH5FKQ3qtl4uRme_vZTgA: 1, // UNIT B
+};
+
 export function sortChannelsByGen(channels: Channel[]): Channel[] {
   return [...channels].sort((a, b) => {
     const genA = GEN_ORDER[a.group ?? ""] ?? 99;
     const genB = GEN_ORDER[b.group ?? ""] ?? 99;
     if (genA !== genB) return genA - genB;
 
-    // Gen 0: use hardcoded debut order
     if (a.group === "0th Generation" && b.group === "0th Generation") {
-      const orderA = GEN0_ORDER[a.id] ?? 99;
-      const orderB = GEN0_ORDER[b.id] ?? 99;
-      return orderA - orderB;
+      return (GEN0_ORDER[a.id] ?? 99) - (GEN0_ORDER[b.id] ?? 99);
     }
 
-    // mekPark: Achrora first, then Unit B — sort alphabetically by group subunit
     if (a.group === "mekPark" && b.group === "mekPark") {
-      return a.id < b.id ? -1 : 1;
+      return (MEKPARK_ORDER[a.id] ?? 99) - (MEKPARK_ORDER[b.id] ?? 99);
     }
 
     return a.id < b.id ? -1 : 1;
