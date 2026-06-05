@@ -127,7 +127,7 @@ export default function TalentDetailPage() {
     <div className="max-w-screen-xl mx-auto px-6 py-8 space-y-8">
       <Link
         to="/talents"
-        className="text-sm text-gray-500 hover:text-white transition-colors"
+        className="text-sm text-gray-500 hover:text-white transition-colors pb-3"
       >
         ← Back to Talents
       </Link>
