@@ -62,9 +62,9 @@ export async function getVideos(params: VideosParams = {}): Promise<Video[]> {
 }
 
 export async function searchVideos(body: {
-  q: string;
-  channel_id?: string;
-  type?: string;
+  q?: string;
+  channel_id?: string[];
+  target?: string[];
   topic?: string[];
   offset?: number;
   limit?: number;

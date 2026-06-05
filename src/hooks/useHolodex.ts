@@ -14,18 +14,14 @@ import type {
 
 import { searchVideos } from "../api/holodex";
 
-export function useVideoSearch(
-  channelId: string,
-  query: string,
-  type?: string,
-) {
+export function useVideoSearch(channelId: string, query: string) {
   return useQuery({
-    queryKey: ["search", channelId, query, type],
+    queryKey: ["search", channelId, query],
     queryFn: () =>
       searchVideos({
         q: query,
-        channel_id: channelId,
-        type: type ?? "stream",
+        channel_id: [channelId],
+        target: ["stream"],
         limit: 50,
       }),
     enabled: query.trim().length > 2,
