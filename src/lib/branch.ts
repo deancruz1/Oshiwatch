@@ -55,8 +55,10 @@ export function getChannelBranch(channel: Channel): Branch | null {
 
 export function isSubChannel(channel: Channel): boolean {
   const name = channel.name ?? "";
+  const englishName = channel.english_name ?? "";
   return (
     /\(sub\)/i.test(name) ||
+    /\(sub\)/i.test(englishName) ||
     /[-–]\s*sub\b/i.test(name) ||
     /sub\s*ch(annel)?/i.test(name)
   );
