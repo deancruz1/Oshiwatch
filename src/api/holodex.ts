@@ -18,6 +18,9 @@ async function apiFetch<T>(
   }
 
   const url = `${path}${searchParams.toString() ? `?${searchParams.toString()}` : ""}`;
+
+  console.log("apiFetch:", url); // add this
+
   const res = await fetch(url);
 
   if (!res.ok) {
