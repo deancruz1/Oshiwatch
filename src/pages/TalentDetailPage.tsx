@@ -74,6 +74,9 @@ export default function TalentDetailPage() {
     return `${count} subscribers`;
   }
 
+  console.log("streams raw:", streams.length, streams[0]);
+  console.log("clips raw:", clips.length, clips[0]);
+
   if (channelLoading) {
     return (
       <div className="max-w-screen-xl mx-auto px-6 py-8 space-y-6">
