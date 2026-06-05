@@ -12,6 +12,27 @@ import type {
   Channel,
 } from "../types/holodex";
 
+import { searchVideos } from "../api/holodex";
+
+export function useVideoSearch(
+  channelId: string,
+  query: string,
+  type?: string,
+) {
+  return useQuery({
+    queryKey: ["search", channelId, query, type],
+    queryFn: () =>
+      searchVideos({
+        q: query,
+        channel_id: channelId,
+        type: type ?? "stream",
+        limit: 50,
+      }),
+    enabled: query.trim().length > 2,
+    staleTime: 2 * 60 * 1000,
+  });
+}
+
 export function useLiveVideos(params: LiveVideosParams = {}) {
   return useQuery({
     queryKey: ["live", params],

@@ -5,6 +5,8 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import VideoCard from "@/components/talent/VideoCard";
 import { getGenLabel, getBranchAccent } from "@/lib/talent";
 import { cn } from "@/lib/utils";
+import { useState } from "react";
+import { useVideoSearch } from "@/hooks/useHolodex";
 
 const MUSIC_TOPICS = ["Original_Song", "Music_Cover"];
 const SHORT_TOPICS = ["shorts"];
@@ -100,6 +102,12 @@ export default function TalentDetailPage() {
     return `${count} subscribers`;
   }
 
+  const [searchQuery, setSearchQuery] = useState("");
+  const { data: searchResults = [], isFetching: searching } = useVideoSearch(
+    channelId!,
+    searchQuery,
+  );
+
   if (channelLoading) {
     return (
       <div className="max-w-screen-xl mx-auto px-6 py-8 space-y-6">
@@ -181,6 +189,47 @@ export default function TalentDetailPage() {
           </div>
         </div>
       </div>
+
+      {/* Search */}
+      <div className="relative">
+        <input
+          type="text"
+          placeholder="Search this channel..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="w-full sm:w-80 bg-white/5 border border-white/10 rounded-lg px-3 py-1.5 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-white/30"
+        />
+        {searching && (
+          <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-gray-500">
+            Searching...
+          </span>
+        )}
+      </div>
+
+      {/* Search results or tabs */}
+      {searchQuery.trim().length > 2 ? (
+        <div className="space-y-4">
+          <p className="text-xs text-gray-500">
+            {searchResults.length} results for "{searchQuery}"
+          </p>
+          {searchResults.length === 0 && !searching ? (
+            <p className="text-gray-500 text-sm py-8 text-center">
+              No results found.
+            </p>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+              {searchResults.map((v) => (
+                <VideoCard key={v.id} video={v} />
+              ))}
+            </div>
+          )}
+        </div>
+      ) : (
+        <Tabs defaultValue="streams">
+          {/* ... existing tabs unchanged ... */}
+        </Tabs>
+      )}
+
       {/* Tabs */}
       <Tabs defaultValue="streams">
         <TabsList className="mb-6">
