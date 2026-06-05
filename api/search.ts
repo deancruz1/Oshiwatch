@@ -1,4 +1,4 @@
-import type { VercelRequest, VercelResponse } from "../api/_types";
+import type { VercelRequest, VercelResponse } from "./_types";
 
 const HOLODEX_BASE = "https://holodex.net/api/v2";
 
@@ -14,13 +14,24 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   try {
+    const body = await new Promise<string>((resolve, reject) => {
+      let data = "";
+      req.on("data", (chunk) => {
+        data += chunk;
+      });
+      req.on("end", () => resolve(data));
+      req.on("error", reject);
+    });
+
+    const parsed = JSON.parse(body);
+
     const response = await fetch(`${HOLODEX_BASE}/search/video`, {
       method: "POST",
       headers: {
         "X-APIKEY": apiKey,
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(req.body),
+      body: JSON.stringify(parsed),
     });
 
     if (!response.ok) {
@@ -29,7 +40,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     const data = await response.json();
     return res.status(200).json(data);
-  } catch {
-    return res.status(500).json({ error: "Failed to search Holodex" });
+  } catch (err) {
+    return res
+      .status(500)
+      .json({ error: "Failed to search Holodex", detail: String(err) });
   }
 }
