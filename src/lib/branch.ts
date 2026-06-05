@@ -72,13 +72,16 @@ export function getVideoBranch(video: Video): Branch | null {
   const name = (video.channel.name ?? "").toLowerCase();
   const suborg = (video.channel.suborg ?? "").toLowerCase();
 
+  // Exclude Holostars hosted streams
   if (name.includes("holostars") || suborg.includes("holostars")) return null;
+
   if (name.includes("hololive-en")) return "EN";
   if (name.includes("hololive-id")) return "ID";
   if (suborg.includes("dev_is") || name.includes("dev_is")) return "DEV_IS";
   if (name.includes("hololive")) return "JP";
 
-  return null;
+  // If channel doesn't match known patterns but org is Hololive, show it anyway as JP
+  return "JP";
 }
 
 export function filterVideosByBranch(
