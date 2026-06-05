@@ -125,13 +125,15 @@ export default function TalentDetailPage() {
 
   return (
     <div className="max-w-screen-xl mx-auto px-6 py-8 space-y-8">
-      <Link
-        to="/talents"
-        className="text-sm text-gray-500 hover:text-white transition-colors mb-3"
-      >
-        ← Back to Talents
-      </Link>
-
+      tsx
+      <div>
+        <Link
+          to="/talents"
+          className="text-sm text-gray-500 hover:text-white transition-colors"
+        >
+          ← Back to Talents
+        </Link>
+      </div>
       {/* Header */}
       <div className="flex gap-6 items-center">
         <img
@@ -180,7 +182,6 @@ export default function TalentDetailPage() {
           </div>
         </div>
       </div>
-
       {/* Tabs */}
       <Tabs defaultValue="streams">
         <TabsList className="mb-6">
