@@ -1,5 +1,5 @@
 import { useParams, Link } from "react-router-dom";
-import { useChannel, useVideos } from "@/hooks/useHolodex";
+import { useChannel, useInfiniteVideos, useVideos } from "@/hooks/useHolodex";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import VideoCard from "@/components/talent/VideoCard";
@@ -14,12 +14,18 @@ export default function TalentDetailPage() {
 
   const { data: channel, isLoading: channelLoading } = useChannel(channelId!);
 
-  const { data: allVideos = [] } = useVideos({
+  const {
+    data: streamsData,
+    fetchNextPage: fetchMoreStreams,
+    hasNextPage: hasMoreStreams,
+    isFetchingNextPage: loadingMoreStreams,
+  } = useInfiniteVideos({
     channel_id: channelId,
     type: "stream",
     status: "past",
-    limit: 50,
   });
+
+  const allStreamVideos = streamsData?.pages.flat() ?? [];
 
   const { data: music = [] } = useVideos({
     channel_id: channelId,
@@ -42,7 +48,7 @@ export default function TalentDetailPage() {
       new Date(a.published_at ?? a.available_at).getTime(),
   );
 
-  const streams = allVideos
+  const streams = allStreamVideos
     .filter(
       (v) =>
         !MUSIC_TOPICS.includes(v.topic_id ?? "") &&
@@ -55,7 +61,7 @@ export default function TalentDetailPage() {
         new Date(a.published_at ?? a.available_at).getTime(),
     );
 
-  const shorts = allVideos
+  const shorts = allStreamVideos
     .filter((v) => SHORT_TOPICS.includes(v.topic_id ?? "") || v.duration <= 60)
     .sort(
       (a, b) =>
@@ -185,11 +191,24 @@ export default function TalentDetailPage() {
               No archived streams found.
             </p>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-              {streams.map((v) => (
-                <VideoCard key={v.id} video={v} />
-              ))}
-            </div>
+            <>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                {streams.map((v) => (
+                  <VideoCard key={v.id} video={v} />
+                ))}
+              </div>
+              {hasMoreStreams && (
+                <div className="flex justify-center mt-6">
+                  <button
+                    onClick={() => fetchMoreStreams()}
+                    disabled={loadingMoreStreams}
+                    className="px-4 py-2 text-sm bg-white/5 border border-white/10 rounded-lg hover:border-white/25 transition-colors disabled:opacity-50"
+                  >
+                    {loadingMoreStreams ? "Loading..." : "Load More"}
+                  </button>
+                </div>
+              )}
+            </>
           )}
         </TabsContent>
 

@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useInfiniteQuery } from "@tanstack/react-query";
 import {
   getLiveVideos,
   getChannels,
@@ -66,6 +66,19 @@ export function useVideos(params: VideosParams = {}) {
   return useQuery({
     queryKey: ["videos", params],
     queryFn: () => getVideos(params),
+    staleTime: 5 * 60 * 1000,
+    enabled: Object.keys(params).length > 0,
+  });
+}
+
+export function useInfiniteVideos(params: VideosParams = {}) {
+  return useInfiniteQuery({
+    queryKey: ["videos-infinite", params],
+    queryFn: ({ pageParam = 0 }) =>
+      getVideos({ ...params, limit: 50, offset: pageParam }),
+    getNextPageParam: (lastPage, pages) =>
+      lastPage.length === 50 ? pages.length * 50 : undefined,
+    initialPageParam: 0,
     staleTime: 5 * 60 * 1000,
     enabled: Object.keys(params).length > 0,
   });
