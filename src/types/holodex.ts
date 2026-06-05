@@ -15,6 +15,7 @@ export interface Channel {
   video_count?: number;
   description?: string;
   inactive?: boolean;
+  twitter?: string;
 }
 
 export interface Video {
