@@ -1,10 +1,9 @@
 import { useState } from "react";
-import { useAllChannels } from "@/hooks/useHolodex";
-import { useLiveVideos } from "@/hooks/useHolodex";
+import { useAllChannels, useLiveVideos } from "@/hooks/useHolodex";
 import BranchFilter, { type Branch } from "@/components/stream/BranchFilter";
 import TalentCard from "@/components/talent/TalentCard";
 import { Skeleton } from "@/components/ui/skeleton";
-import { filterChannelsByBranch } from "@/lib/branch";
+import { filterChannelsByBranch, sortChannelsByGen } from "@/lib/branch";
 
 export default function TalentsPage() {
   const [selectedBranches, setSelectedBranches] = useState<Branch[]>([
@@ -20,17 +19,16 @@ export default function TalentsPage() {
 
   const liveChannelIds = new Set(liveVideos.map((v) => v.channel.id));
 
-  const filtered = filterChannelsByBranch(channels, selectedBranches).filter(
-    (c) => {
+  const filtered = sortChannelsByGen(
+    filterChannelsByBranch(channels, selectedBranches).filter((c) => {
       if (!search.trim()) return true;
       const name = (c.english_name ?? c.name).toLowerCase();
       return name.includes(search.toLowerCase());
-    },
+    }),
   );
 
   return (
     <div className="max-w-screen-2xl mx-auto px-6 py-8 space-y-6">
-      {/* Header */}
       <div>
         <h1 className="text-2xl font-bold tracking-tight">Talents</h1>
         <p className="text-sm text-gray-400 mt-0.5">
@@ -38,7 +36,6 @@ export default function TalentsPage() {
         </p>
       </div>
 
-      {/* Controls */}
       <div className="flex flex-col sm:flex-row gap-3 sm:items-center justify-between">
         <BranchFilter
           selected={selectedBranches}
@@ -53,12 +50,10 @@ export default function TalentsPage() {
         />
       </div>
 
-      {/* Count */}
       {!isLoading && (
         <p className="text-xs text-gray-500">{filtered.length} talents</p>
       )}
 
-      {/* Grid */}
       {isLoading ? (
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-3">
           {Array.from({ length: 24 }).map((_, i) => (

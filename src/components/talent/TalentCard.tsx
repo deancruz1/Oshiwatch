@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import type { Channel } from "@/types/holodex";
 import { cn } from "@/lib/utils";
+import { isGraduated } from "@/lib/branch";
 
 interface TalentCardProps {
   channel: Channel;
@@ -14,26 +15,39 @@ function formatSubs(count?: number): string {
   return String(count);
 }
 
-function getSuborgLabel(channel: Channel): string {
-  const suborg = channel.suborg ?? "";
-  // suborg format is like "ihEnglish -Advent-" or "oeHOLOSTARS English -ARMIS-"
-  // extract the part in dashes if present
-  const match = suborg.match(/-([^-]+)-$/);
-  if (match) return match[1].trim();
-  const name = channel.name ?? "";
-  if (name.toLowerCase().includes("hololive-en")) return "EN";
-  if (name.toLowerCase().includes("hololive-id")) return "ID";
-  return "JP";
+function getGenLabel(group?: string): string {
+  if (!group) return "";
+  // Shorten common ones
+  const map: Record<string, string> = {
+    "0th Generation": "Gen 0",
+    "1st Generation": "Gen 1",
+    "2nd Generation": "Gen 2",
+    "3rd Generation (Fantasy)": "Gen 3",
+    "4th Generation (holoForce)": "Gen 4",
+    "5th Generation (holoFive)": "Gen 5",
+    "6th Generation -holoX-": "holoX",
+    GAMERS: "GAMERS",
+    "English -Myth-": "Myth",
+    "English -Promise-": "Promise",
+    "English -Advent-": "Advent",
+    "English -Justice-": "Justice",
+    "Indonesia 1st Gen (AREA 15)": "ID Gen 1",
+    "Indonesia 2nd Gen (holoro)": "ID Gen 2",
+    "Indonesia 3rd Gen (holoh3ro)": "ID Gen 3",
+    "DEV_IS ReGLOSS": "ReGLOSS",
+    "DEV_IS FLOW GLOW": "FLOW GLOW",
+    mekPark: "mekPark",
+  };
+  return map[group] ?? group;
 }
 
-function getBranchAccent(channel: Channel): string {
-  const name = (channel.name ?? "").toLowerCase();
-  const suborg = (channel.suborg ?? "").toLowerCase();
-  if (name.includes("hololive-en"))
+function getBranchAccent(group?: string): string {
+  if (!group) return "bg-white/10 text-gray-300 border-white/20";
+  if (group.startsWith("English"))
     return "bg-blue-500/10 text-blue-300 border-blue-500/20";
-  if (name.includes("hololive-id"))
+  if (group.startsWith("Indonesia"))
     return "bg-green-500/10 text-green-300 border-green-500/20";
-  if (suborg.includes("dev_is") || name.includes("dev_is"))
+  if (group.startsWith("DEV_IS") || group === "mekPark")
     return "bg-purple-500/10 text-purple-300 border-purple-500/20";
   return "bg-red-500/10 text-red-300 border-red-500/20";
 }
@@ -42,20 +56,30 @@ export default function TalentCard({
   channel,
   isLive = false,
 }: TalentCardProps) {
+  const graduated = isGraduated(channel);
+
   return (
     <Link
       to={`/talents/${channel.id}`}
-      className="group flex flex-col items-center text-center p-4 rounded-xl bg-white/5 border border-white/10 hover:border-white/25 hover:-translate-y-0.5 transition-all duration-200"
+      className={cn(
+        "group flex flex-col items-center text-center p-4 rounded-xl border transition-all duration-200 hover:-translate-y-0.5",
+        graduated
+          ? "bg-white/[0.02] border-white/5 opacity-60 hover:opacity-80"
+          : "bg-white/5 border-white/10 hover:border-white/25",
+      )}
     >
       {/* Avatar */}
       <div className="relative mb-3">
         <img
           src={channel.photo}
           alt={channel.english_name ?? channel.name}
-          className="w-16 h-16 rounded-full object-cover"
+          className={cn(
+            "w-16 h-16 rounded-full object-cover",
+            graduated && "grayscale",
+          )}
           loading="lazy"
         />
-        {isLive && (
+        {isLive && !graduated && (
           <span className="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-red-500 border-2 border-gray-950 flex items-center justify-center">
             <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
           </span>
@@ -71,14 +95,21 @@ export default function TalentCard({
       <span
         className={cn(
           "text-xs px-2 py-0.5 rounded-full border mb-2",
-          getBranchAccent(channel),
+          getBranchAccent(channel.group),
         )}
       >
-        {getSuborgLabel(channel)}
+        {getGenLabel(channel.group)}
       </span>
 
+      {/* Graduated badge */}
+      {graduated && (
+        <span className="text-xs px-2 py-0.5 rounded-full border bg-gray-500/10 text-gray-400 border-gray-500/20 mb-2">
+          Graduated
+        </span>
+      )}
+
       {/* Sub count */}
-      {channel.subscriber_count && (
+      {channel.subscriber_count && !graduated && (
         <p className="text-xs text-gray-500">
           {formatSubs(channel.subscriber_count)} subs
         </p>

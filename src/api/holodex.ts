@@ -25,7 +25,6 @@ async function apiFetch<T>(
   }
 
   const json = await res.json();
-  console.log(JSON.stringify(json.slice(0, 3), null, 2)); // log first 3 results
   return json;
   // return res.json();
 }

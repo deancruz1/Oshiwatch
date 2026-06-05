@@ -44,8 +44,14 @@ export function useAllChannels() {
         }),
       ]);
       const all = [...page1, ...page2, ...page3];
-      console.log("Groups:", [...new Set(all.map((c) => c.group))].sort());
-
+      console.log(
+        "mekPark:",
+        JSON.stringify(
+          all.filter((c) => c.group === "mekPark"),
+          null,
+          2,
+        ),
+      );
       return all.sort((a, b) => {
         const nameA = (a.english_name ?? a.name).toLowerCase();
         const nameB = (b.english_name ?? b.name).toLowerCase();

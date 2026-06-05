@@ -1,31 +1,69 @@
 import type { Branch } from "@/components/stream/BranchFilter";
 import type { Video, Channel } from "@/types/holodex";
 
-const EXCLUDED_GROUPS = ["Official", "Misc", "holo-n"];
+const EXCLUDED_GROUPS = ["Official", "Misc", "holo-n", "CN 1st Generation"];
+const HOLOSTARS_GROUPS = [
+  "HOLOSTARS 1st Gen",
+  "HOLOSTARS 2nd Gen (SunTempo)",
+  "HOLOSTARS 3rd Gen (TriNero)",
+  "HOLOSTARS English -ARMIS-",
+  "HOLOSTARS English -TEMPUS- HQ",
+  "HOLOSTARS English -TEMPUS- Vanguard",
+  "HOLOSTARS UPROAR!!",
+];
+
+export const GEN_ORDER: Record<string, number> = {
+  // JP
+  "0th Generation": 0,
+  "1st Generation": 1,
+  GAMERS: 2,
+  "2nd Generation": 3,
+  "3rd Generation (Fantasy)": 4,
+  "4th Generation (holoForce)": 5,
+  "5th Generation (holoFive)": 6,
+  "6th Generation -holoX-": 7,
+  // EN
+  "English -Myth-": 8,
+  "English -Promise-": 9,
+  "English -Advent-": 10,
+  "English -Justice-": 11,
+  // ID
+  "Indonesia 1st Gen (AREA 15)": 12,
+  "Indonesia 2nd Gen (holoro)": 13,
+  "Indonesia 3rd Gen (holoh3ro)": 14,
+  // DEV_IS
+  "DEV_IS ReGLOSS": 15,
+  "DEV_IS FLOW GLOW": 16,
+  // mekPark
+  mekPark: 17,
+};
 
 export function getChannelBranch(channel: Channel): Branch | null {
-  const group = (channel.group ?? "").toLowerCase();
-  const name = (channel.name ?? "").toLowerCase();
+  const group = channel.group ?? "";
 
-  // Exclude official brand channels, misc, inactive
-  if (EXCLUDED_GROUPS.map((g) => g.toLowerCase()).includes(group)) return null;
-  if (channel.inactive) return null;
+  if (EXCLUDED_GROUPS.includes(group)) return null;
+  if (HOLOSTARS_GROUPS.includes(group)) return null;
+  if (isSubChannel(channel)) return null;
 
-  // Exclude Holostars
-  if (group.includes("holostars")) return null;
-
-  // Branch detection using group field
-  if (group.includes("dev_is")) return "DEV_IS";
-  if (group.includes("english")) return "EN";
-  if (
-    name.includes("hololive-id") ||
-    group.includes("indonesia") ||
-    group.includes("holoh3ro") ||
-    group.includes("gen (holoh3ro)")
-  )
-    return "ID";
+  if (group.startsWith("DEV_IS")) return "DEV_IS";
+  if (group.startsWith("English")) return "EN";
+  if (group.startsWith("Indonesia")) return "ID";
+  if (group === "mekPark") return "JP";
 
   return "JP";
+}
+
+export function isSubChannel(channel: Channel): boolean {
+  const name = channel.name ?? "";
+  return (
+    /\(sub\)/i.test(name) ||
+    /[-–]\s*sub\b/i.test(name) ||
+    /sub\s*ch(annel)?/i.test(name)
+  );
+}
+
+export function isGraduated(channel: Channel): boolean {
+  return channel.inactive === true;
 }
 
 export function getVideoBranch(video: Video): Branch | null {
@@ -58,5 +96,36 @@ export function filterChannelsByBranch(
   return channels.filter((c) => {
     const branch = getChannelBranch(c);
     return branch !== null && selected.includes(branch);
+  });
+}
+
+// Gen 0 debut order by channel ID
+const GEN0_ORDER: Record<string, number> = {
+  UCp6993wxpyDPHUpavwDFqgg: 0, // Tokino Sora
+  UCDqI2jOz0weumE8s7paEk6g: 1, // Roboco
+  UC35tFqLMaMFgkOzOZBflLMg: 2, // Sakura Miko
+  UC5CwaMl1eIgY8h02uZw7u8A: 3, // Hoshimachi Suisei
+  UC0TXe_LYZ4scaW2XMyi5_kw: 4, // AZKi
+};
+
+export function sortChannelsByGen(channels: Channel[]): Channel[] {
+  return [...channels].sort((a, b) => {
+    const genA = GEN_ORDER[a.group ?? ""] ?? 99;
+    const genB = GEN_ORDER[b.group ?? ""] ?? 99;
+    if (genA !== genB) return genA - genB;
+
+    // Gen 0: use hardcoded debut order
+    if (a.group === "0th Generation" && b.group === "0th Generation") {
+      const orderA = GEN0_ORDER[a.id] ?? 99;
+      const orderB = GEN0_ORDER[b.id] ?? 99;
+      return orderA - orderB;
+    }
+
+    // mekPark: Achrora first, then Unit B — sort alphabetically by group subunit
+    if (a.group === "mekPark" && b.group === "mekPark") {
+      return a.id < b.id ? -1 : 1;
+    }
+
+    return a.id < b.id ? -1 : 1;
   });
 }
