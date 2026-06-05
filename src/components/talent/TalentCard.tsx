@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import type { Channel } from "@/types/holodex";
 import { cn } from "@/lib/utils";
 import { isGraduated } from "@/lib/branch";
+import { LOCAL_TALENT_IMAGES } from "@/assets/talent-images";
 
 interface TalentCardProps {
   channel: Channel;
@@ -65,10 +66,16 @@ export default function TalentCard({
       {/* Avatar */}
       <div className="relative mb-3">
         <img
-          src={channel.photo}
+          src={LOCAL_TALENT_IMAGES[channel.id] ?? channel.photo}
           alt={channel.english_name ?? channel.name}
           className="w-16 h-16 rounded-full object-cover"
           loading="lazy"
+          onError={(e) => {
+            if (LOCAL_TALENT_IMAGES[channel.id]) {
+              (e.target as HTMLImageElement).src =
+                LOCAL_TALENT_IMAGES[channel.id];
+            }
+          }}
         />
         {isLive && (
           <span className="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-red-500 border-2 border-gray-950 flex items-center justify-center">

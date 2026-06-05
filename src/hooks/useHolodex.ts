@@ -45,9 +45,9 @@ export function useAllChannels() {
       ]);
       const all = [...page1, ...page2, ...page3];
       console.log(
-        "mekPark:",
+        "No photo:",
         JSON.stringify(
-          all.filter((c) => c.group === "mekPark"),
+          all.filter((c) => !c.photo || c.photo === ""),
           null,
           2,
         ),
