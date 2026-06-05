@@ -45,9 +45,9 @@ export function useAllChannels() {
       ]);
       const all = [...page1, ...page2, ...page3];
       console.log(
-        "No photo:",
+        "Mel:",
         JSON.stringify(
-          all.filter((c) => !c.photo || c.photo === ""),
+          all.find((c) => c.name.toLowerCase().includes("mel")),
           null,
           2,
         ),
