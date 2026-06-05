@@ -1,5 +1,5 @@
 import { useParams, Link } from "react-router-dom";
-import { useChannel, useInfiniteVideos, useVideos } from "@/hooks/useHolodex";
+import { useChannel, useInfiniteVideos } from "@/hooks/useHolodex";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import VideoCard from "@/components/talent/VideoCard";
@@ -25,23 +25,46 @@ export default function TalentDetailPage() {
     status: "past",
   });
 
-  const allStreamVideos = streamsData?.pages.flat() ?? [];
+  const {
+    data: shortsData,
+    fetchNextPage: fetchMoreShorts,
+    hasNextPage: hasMoreShorts,
+    isFetchingNextPage: loadingMoreShorts,
+  } = useInfiniteVideos({
+    channel_id: channelId,
+    type: "stream",
+    status: "past",
+    topic: "shorts",
+  });
 
-  const { data: music = [] } = useVideos({
+  const {
+    data: musicData,
+    fetchNextPage: fetchMoreMusic,
+    hasNextPage: hasMoreMusic,
+    isFetchingNextPage: loadingMoreMusic,
+  } = useInfiniteVideos({
     channel_id: channelId,
     topic: "Original_Song",
-    limit: 50,
   });
 
-  const { data: musicCovers = [] } = useVideos({
+  const {
+    data: musicCoversData,
+    fetchNextPage: fetchMoreCovers,
+    hasNextPage: hasMoreCovers,
+    isFetchingNextPage: loadingMoreCovers,
+  } = useInfiniteVideos({
     channel_id: channelId,
     topic: "Music_Cover",
-    limit: 50,
   });
 
+  const allStreamVideos = streamsData?.pages.flat() ?? [];
+  const allShortsVideos = shortsData?.pages.flat() ?? [];
+  const musicFlat = musicData?.pages.flat() ?? [];
+  const coversFlat = musicCoversData?.pages.flat() ?? [];
+
   const allMusic = [
-    ...music,
-    ...musicCovers.filter((v) => !music.find((m) => m.id === v.id)),
+    ...musicFlat,
+    ...coversFlat.filter((v) => !musicFlat.find((m) => m.id === v.id)),
   ].sort(
     (a, b) =>
       new Date(b.published_at ?? b.available_at).getTime() -
@@ -61,7 +84,7 @@ export default function TalentDetailPage() {
         new Date(a.published_at ?? a.available_at).getTime(),
     );
 
-  const shorts = allStreamVideos
+  const shorts = allShortsVideos
     .filter((v) => SHORT_TOPICS.includes(v.topic_id ?? "") || v.duration <= 60)
     .sort(
       (a, b) =>
@@ -161,28 +184,9 @@ export default function TalentDetailPage() {
       {/* Tabs */}
       <Tabs defaultValue="streams">
         <TabsList className="mb-6">
-          <TabsTrigger value="streams">
-            Streams{" "}
-            {streams.length > 0 && (
-              <span className="ml-1.5 text-xs opacity-50">
-                {streams.length}
-              </span>
-            )}
-          </TabsTrigger>
-          <TabsTrigger value="shorts">
-            Shorts{" "}
-            {shorts.length > 0 && (
-              <span className="ml-1.5 text-xs opacity-50">{shorts.length}</span>
-            )}
-          </TabsTrigger>
-          <TabsTrigger value="music">
-            Music{" "}
-            {allMusic.length > 0 && (
-              <span className="ml-1.5 text-xs opacity-50">
-                {allMusic.length}
-              </span>
-            )}
-          </TabsTrigger>
+          <TabsTrigger value="streams">Streams</TabsTrigger>
+          <TabsTrigger value="shorts">Shorts</TabsTrigger>
+          <TabsTrigger value="music">Music</TabsTrigger>
         </TabsList>
 
         <TabsContent value="streams">
@@ -218,11 +222,24 @@ export default function TalentDetailPage() {
               No shorts found.
             </p>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-              {shorts.map((v) => (
-                <VideoCard key={v.id} video={v} />
-              ))}
-            </div>
+            <>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                {shorts.map((v) => (
+                  <VideoCard key={v.id} video={v} />
+                ))}
+              </div>
+              {hasMoreShorts && (
+                <div className="flex justify-center mt-6">
+                  <button
+                    onClick={() => fetchMoreShorts()}
+                    disabled={loadingMoreShorts}
+                    className="px-4 py-2 text-sm bg-white/5 border border-white/10 rounded-lg hover:border-white/25 transition-colors disabled:opacity-50"
+                  >
+                    {loadingMoreShorts ? "Loading..." : "Load More"}
+                  </button>
+                </div>
+              )}
+            </>
           )}
         </TabsContent>
 
@@ -232,11 +249,29 @@ export default function TalentDetailPage() {
               No music found.
             </p>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-              {allMusic.map((v) => (
-                <VideoCard key={v.id} video={v} />
-              ))}
-            </div>
+            <>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                {allMusic.map((v) => (
+                  <VideoCard key={v.id} video={v} />
+                ))}
+              </div>
+              {(hasMoreMusic || hasMoreCovers) && (
+                <div className="flex justify-center mt-6">
+                  <button
+                    onClick={() => {
+                      if (hasMoreMusic) fetchMoreMusic();
+                      if (hasMoreCovers) fetchMoreCovers();
+                    }}
+                    disabled={loadingMoreMusic || loadingMoreCovers}
+                    className="px-4 py-2 text-sm bg-white/5 border border-white/10 rounded-lg hover:border-white/25 transition-colors disabled:opacity-50"
+                  >
+                    {loadingMoreMusic || loadingMoreCovers
+                      ? "Loading..."
+                      : "Load More"}
+                  </button>
+                </div>
+              )}
+            </>
           )}
         </TabsContent>
       </Tabs>
