@@ -71,16 +71,18 @@ export function isGraduated(channel: Channel): boolean {
 export function getVideoBranch(video: Video): Branch | null {
   const name = (video.channel.name ?? "").toLowerCase();
   const suborg = (video.channel.suborg ?? "").toLowerCase();
+  const org = (video.channel.org ?? "").toLowerCase();
 
-  // Exclude Holostars hosted streams
+  // Must be a Hololive org channel
+  if (org !== "hololive") return null;
+
+  // Exclude Holostars
   if (name.includes("holostars") || suborg.includes("holostars")) return null;
 
   if (name.includes("hololive-en")) return "EN";
   if (name.includes("hololive-id")) return "ID";
   if (suborg.includes("dev_is") || name.includes("dev_is")) return "DEV_IS";
-  if (name.includes("hololive")) return "JP";
 
-  // If channel doesn't match known patterns but org is Hololive, show it anyway as JP
   return "JP";
 }
 
