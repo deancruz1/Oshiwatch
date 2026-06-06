@@ -75,5 +75,7 @@ export async function searchVideos(body: {
     body: JSON.stringify(body),
   });
   if (!res.ok) throw new Error(`Search error: ${res.status}`);
+  const bodyPayload = JSON.stringify(body);
+  console.log("search body:", bodyPayload);
   return res.json();
 }
