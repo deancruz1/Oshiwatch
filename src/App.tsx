@@ -24,8 +24,8 @@ export default function App() {
             <Route path="/" element={<HomePage />} />
             <Route path="/talents" element={<TalentsPage />} />
             <Route path="/talents/:channelId" element={<TalentDetailPage />} />
-            <Route path="/watch/:videoId" element={<WatchPage />} />
           </Route>
+          <Route path="/watch/:videoId" element={<WatchPage />} />
         </Routes>
       </BrowserRouter>
     </QueryClientProvider>

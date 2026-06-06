@@ -10,50 +10,55 @@ export default function WatchPage() {
   const chatUrl = `https://www.youtube.com/live_chat?v=${videoId}&embed_domain=oshiwatch.vercel.app`;
 
   return (
-    <div className="min-h-[calc(100vh-4rem)] flex flex-col bg-gray-950">
-      {/* Main content */}
-      <div className="flex flex-1 flex-col lg:flex-row">
+    <div className="h-screen flex flex-col bg-gray-950 text-white">
+      {/* Navbar */}
+      <header className="flex-shrink-0 h-12 border-b border-white/10 bg-gray-950/80 backdrop-blur-md flex items-center justify-between px-6">
+        <Link
+          to="/"
+          className="font-bold text-base tracking-tight hover:opacity-80 transition-opacity"
+        >
+          Oshiwatch
+        </Link>
+        <Link
+          to={channelId ? `/talents/${channelId}` : "/"}
+          className="text-sm text-gray-400 hover:text-white transition-colors"
+        >
+          ← Back
+        </Link>
+      </header>
+
+      {/* Content */}
+      <div className="flex flex-1 overflow-hidden flex-col lg:flex-row">
         {/* Player */}
-        <div className={`flex flex-col ${isLive ? "lg:flex-1" : "w-full"}`}>
-          <div className="px-6 pt-4 pb-2">
-            <Link
-              to={channelId ? `/talents/${channelId}` : "/"}
-              className="text-sm text-gray-400 hover:text-white transition-colors"
-            >
-              ← Back
-            </Link>
-          </div>
-          <div className="px-6 pb-6">
-            {isLive ? (
+        <div
+          className={`flex flex-col flex-1 overflow-hidden ${isLive ? "" : "justify-center"}`}
+        >
+          {isLive ? (
+            <iframe
+              src={embedUrl}
+              className="w-full flex-1"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+            />
+          ) : (
+            <div className="relative w-full" style={{ paddingTop: "56.25%" }}>
               <iframe
                 src={embedUrl}
-                className="w-full min-h-[60vh] rounded-xl"
+                className="absolute inset-0 w-full h-full"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 allowFullScreen
               />
-            ) : (
-              <div className="relative w-full" style={{ paddingTop: "56.25%" }}>
-                <iframe
-                  src={embedUrl}
-                  className="absolute inset-0 w-full h-full rounded-xl"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowFullScreen
-                />
-              </div>
-            )}
-          </div>
+            </div>
+          )}
         </div>
 
         {/* Live chat */}
         {isLive && (
-          <div className="flex flex-col w-full lg:w-[380px] flex-shrink-0 border-t lg:border-t-0 lg:border-l border-white/10">
+          <div className="flex flex-col w-full lg:w-[380px] flex-shrink-0 border-l border-white/10">
             <div className="px-4 py-2 border-b border-white/10 flex-shrink-0">
               <p className="text-xs text-gray-400 font-medium">Live Chat</p>
             </div>
-            <iframe
-              src={chatUrl}
-              className="w-full flex-1 min-h-[400px] lg:min-h-0 lg:h-[calc(100vh-4rem)]"
-            />
+            <iframe src={chatUrl} className="flex-1 w-full" />
           </div>
         )}
       </div>
