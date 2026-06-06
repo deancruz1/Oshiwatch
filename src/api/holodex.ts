@@ -69,13 +69,13 @@ export async function searchVideos(body: {
   offset?: number;
   limit?: number;
 }): Promise<Video[]> {
+  const bodyPayload = JSON.stringify(body);
+  console.log("search body:", bodyPayload);
   const res = await fetch("/api/search", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(body),
   });
   if (!res.ok) throw new Error(`Search error: ${res.status}`);
-  const bodyPayload = JSON.stringify(body);
-  console.log("search body:", bodyPayload);
   return res.json();
 }
