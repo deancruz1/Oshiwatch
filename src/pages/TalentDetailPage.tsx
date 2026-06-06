@@ -1,18 +1,23 @@
+import { useState } from "react";
 import { useParams, Link } from "react-router-dom";
-import { useChannel, useInfiniteVideos } from "@/hooks/useHolodex";
+import {
+  useChannel,
+  useInfiniteVideos,
+  useVideoSearch,
+} from "@/hooks/useHolodex";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import VideoCard from "@/components/talent/VideoCard";
 import { getGenLabel, getBranchAccent } from "@/lib/talent";
 import { cn } from "@/lib/utils";
-import { useState } from "react";
-import { useVideoSearch } from "@/hooks/useHolodex";
 
 const MUSIC_TOPICS = ["Original_Song", "Music_Cover"];
 const SHORT_TOPICS = ["shorts"];
 
 export default function TalentDetailPage() {
   const { channelId } = useParams<{ channelId: string }>();
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchInput, setSearchInput] = useState("");
 
   const { data: channel, isLoading: channelLoading } = useChannel(channelId!);
 
@@ -59,6 +64,11 @@ export default function TalentDetailPage() {
     topic: "Music_Cover",
   });
 
+  const { data: searchResults = [], isFetching: searching } = useVideoSearch(
+    channelId!,
+    searchQuery,
+  );
+
   const allStreamVideos = streamsData?.pages.flat() ?? [];
   const allShortsVideos = shortsData?.pages.flat() ?? [];
   const musicFlat = musicData?.pages.flat() ?? [];
@@ -102,11 +112,10 @@ export default function TalentDetailPage() {
     return `${count} subscribers`;
   }
 
-  const [searchQuery, setSearchQuery] = useState("");
-  const { data: searchResults = [], isFetching: searching } = useVideoSearch(
-    channelId!,
-    searchQuery,
-  );
+  function handleSearch(e: React.FormEvent) {
+    e.preventDefault();
+    setSearchQuery(searchInput);
+  }
 
   if (channelLoading) {
     return (
@@ -131,6 +140,8 @@ export default function TalentDetailPage() {
     );
   }
 
+  const isSearching = searchQuery.trim().length > 2;
+
   return (
     <div className="max-w-screen-xl mx-auto px-6 py-8 space-y-8">
       <div>
@@ -141,6 +152,7 @@ export default function TalentDetailPage() {
           ← Back to Talents
         </Link>
       </div>
+
       {/* Header */}
       <div className="flex gap-6 items-center">
         <img
@@ -191,28 +203,46 @@ export default function TalentDetailPage() {
       </div>
 
       {/* Search */}
-      <div className="relative">
+      <form onSubmit={handleSearch} className="flex gap-2">
         <input
           type="text"
-          placeholder="Search this channel..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
+          placeholder="Search videos..."
+          value={searchInput}
+          onChange={(e) => setSearchInput(e.target.value)}
           className="w-full sm:w-80 bg-white/5 border border-white/10 rounded-lg px-3 py-1.5 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-white/30"
         />
-        {searching && (
-          <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-gray-500">
-            Searching...
-          </span>
+        <button
+          type="submit"
+          className="px-4 py-1.5 text-sm bg-white/5 border border-white/10 rounded-lg hover:border-white/25 transition-colors"
+        >
+          Search
+        </button>
+        {isSearching && (
+          <button
+            type="button"
+            onClick={() => {
+              setSearchQuery("");
+              setSearchInput("");
+            }}
+            className="px-4 py-1.5 text-sm text-gray-400 hover:text-white transition-colors"
+          >
+            Clear
+          </button>
         )}
-      </div>
+      </form>
 
-      {/* Search results or tabs */}
-      {searchQuery.trim().length > 2 ? (
+      {/* Search results */}
+      {isSearching ? (
         <div className="space-y-4">
-          <p className="text-xs text-gray-500">
-            {searchResults.length} results for "{searchQuery}"
-          </p>
-          {searchResults.length === 0 && !searching ? (
+          {searching ? (
+            <p className="text-xs text-gray-500">Searching...</p>
+          ) : (
+            <p className="text-xs text-gray-500">
+              {searchResults.length} result
+              {searchResults.length !== 1 ? "s" : ""} for "{searchQuery}"
+            </p>
+          )}
+          {!searching && searchResults.length === 0 ? (
             <p className="text-gray-500 text-sm py-8 text-center">
               No results found.
             </p>
@@ -226,104 +256,99 @@ export default function TalentDetailPage() {
         </div>
       ) : (
         <Tabs defaultValue="streams">
-          {/* ... existing tabs unchanged ... */}
+          <TabsList className="mb-6">
+            <TabsTrigger value="streams">Streams</TabsTrigger>
+            <TabsTrigger value="shorts">Shorts</TabsTrigger>
+            <TabsTrigger value="music">Music</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="streams">
+            {streams.length === 0 ? (
+              <p className="text-gray-500 text-sm py-8 text-center">
+                No archived streams found.
+              </p>
+            ) : (
+              <>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                  {streams.map((v) => (
+                    <VideoCard key={v.id} video={v} />
+                  ))}
+                </div>
+                {hasMoreStreams && (
+                  <div className="flex justify-center mt-6">
+                    <button
+                      onClick={() => fetchMoreStreams()}
+                      disabled={loadingMoreStreams}
+                      className="px-4 py-2 text-sm bg-white/5 border border-white/10 rounded-lg hover:border-white/25 transition-colors disabled:opacity-50"
+                    >
+                      {loadingMoreStreams ? "Loading..." : "Load More"}
+                    </button>
+                  </div>
+                )}
+              </>
+            )}
+          </TabsContent>
+
+          <TabsContent value="shorts">
+            {shorts.length === 0 ? (
+              <p className="text-gray-500 text-sm py-8 text-center">
+                No shorts found.
+              </p>
+            ) : (
+              <>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                  {shorts.map((v) => (
+                    <VideoCard key={v.id} video={v} />
+                  ))}
+                </div>
+                {hasMoreShorts && (
+                  <div className="flex justify-center mt-6">
+                    <button
+                      onClick={() => fetchMoreShorts()}
+                      disabled={loadingMoreShorts}
+                      className="px-4 py-2 text-sm bg-white/5 border border-white/10 rounded-lg hover:border-white/25 transition-colors disabled:opacity-50"
+                    >
+                      {loadingMoreShorts ? "Loading..." : "Load More"}
+                    </button>
+                  </div>
+                )}
+              </>
+            )}
+          </TabsContent>
+
+          <TabsContent value="music">
+            {allMusic.length === 0 ? (
+              <p className="text-gray-500 text-sm py-8 text-center">
+                No music found.
+              </p>
+            ) : (
+              <>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                  {allMusic.map((v) => (
+                    <VideoCard key={v.id} video={v} />
+                  ))}
+                </div>
+                {(hasMoreMusic || hasMoreCovers) && (
+                  <div className="flex justify-center mt-6">
+                    <button
+                      onClick={() => {
+                        if (hasMoreMusic) fetchMoreMusic();
+                        if (hasMoreCovers) fetchMoreCovers();
+                      }}
+                      disabled={loadingMoreMusic || loadingMoreCovers}
+                      className="px-4 py-2 text-sm bg-white/5 border border-white/10 rounded-lg hover:border-white/25 transition-colors disabled:opacity-50"
+                    >
+                      {loadingMoreMusic || loadingMoreCovers
+                        ? "Loading..."
+                        : "Load More"}
+                    </button>
+                  </div>
+                )}
+              </>
+            )}
+          </TabsContent>
         </Tabs>
       )}
-
-      {/* Tabs */}
-      <Tabs defaultValue="streams">
-        <TabsList className="mb-6">
-          <TabsTrigger value="streams">Streams</TabsTrigger>
-          <TabsTrigger value="shorts">Shorts</TabsTrigger>
-          <TabsTrigger value="music">Music</TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="streams">
-          {streams.length === 0 ? (
-            <p className="text-gray-500 text-sm py-8 text-center">
-              No archived streams found.
-            </p>
-          ) : (
-            <>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                {streams.map((v) => (
-                  <VideoCard key={v.id} video={v} />
-                ))}
-              </div>
-              {hasMoreStreams && (
-                <div className="flex justify-center mt-6">
-                  <button
-                    onClick={() => fetchMoreStreams()}
-                    disabled={loadingMoreStreams}
-                    className="px-4 py-2 text-sm bg-white/5 border border-white/10 rounded-lg hover:border-white/25 transition-colors disabled:opacity-50"
-                  >
-                    {loadingMoreStreams ? "Loading..." : "Load More"}
-                  </button>
-                </div>
-              )}
-            </>
-          )}
-        </TabsContent>
-
-        <TabsContent value="shorts">
-          {shorts.length === 0 ? (
-            <p className="text-gray-500 text-sm py-8 text-center">
-              No shorts found.
-            </p>
-          ) : (
-            <>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                {shorts.map((v) => (
-                  <VideoCard key={v.id} video={v} />
-                ))}
-              </div>
-              {hasMoreShorts && (
-                <div className="flex justify-center mt-6">
-                  <button
-                    onClick={() => fetchMoreShorts()}
-                    disabled={loadingMoreShorts}
-                    className="px-4 py-2 text-sm bg-white/5 border border-white/10 rounded-lg hover:border-white/25 transition-colors disabled:opacity-50"
-                  >
-                    {loadingMoreShorts ? "Loading..." : "Load More"}
-                  </button>
-                </div>
-              )}
-            </>
-          )}
-        </TabsContent>
-
-        <TabsContent value="music">
-          {allMusic.length === 0 ? (
-            <p className="text-gray-500 text-sm py-8 text-center">
-              No music found.
-            </p>
-          ) : (
-            <>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                {allMusic.map((v) => (
-                  <VideoCard key={v.id} video={v} />
-                ))}
-              </div>
-              {(hasMoreMusic || hasMoreCovers) && (
-                <div className="flex justify-center mt-6">
-                  <button
-                    onClick={() => {
-                      if (hasMoreMusic) fetchMoreMusic();
-                      if (hasMoreCovers) fetchMoreCovers();
-                    }}
-                    disabled={loadingMoreMusic || loadingMoreCovers}
-                    className="px-4 py-2 text-sm bg-white/5 border border-white/10 rounded-lg hover:border-white/25 transition-colors disabled:opacity-50"
-                  >
-                    {loadingMoreMusic || loadingMoreCovers
-                      ? "Loading..."
-                      : "Load More"}
-                  </button>
-                </div>
-              )}
-            </>
-          )}
-        </TabsContent>
-      </Tabs>
     </div>
   );
 }
