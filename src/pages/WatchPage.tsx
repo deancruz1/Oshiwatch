@@ -6,7 +6,7 @@ export default function WatchPage() {
   const channelId = searchParams.get("from");
   const isLive = searchParams.get("live") === "true";
 
-  const embedUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0`;
+  const embedUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0&modestbranding=1`;
   const chatUrl = `https://www.youtube.com/live_chat?v=${videoId}&embed_domain=oshiwatch.vercel.app`;
 
   return (
@@ -41,14 +41,11 @@ export default function WatchPage() {
               allowFullScreen
             />
           ) : (
-            <div className="flex flex-1 items-center justify-center p-6">
-              <div
-                className="relative w-full max-w-5xl"
-                style={{ paddingTop: "min(56.25%, calc(100vh - 12rem))" }}
-              >
+            <div className="flex flex-1 items-center justify-center">
+              <div className="relative w-full h-full">
                 <iframe
                   src={embedUrl}
-                  className="absolute inset-0 w-full h-full rounded-xl"
+                  className="absolute inset-0 w-full h-full"
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                   allowFullScreen
                 />
