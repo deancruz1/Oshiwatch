@@ -11,38 +11,35 @@ export default function WatchPage() {
 
   return (
     <div className="min-h-[calc(100vh-4rem)] flex flex-col bg-gray-950">
-      {/* Back nav */}
-      <div className="px-4 py-2 border-b border-white/10 flex items-center gap-3 flex-shrink-0">
-        <Link
-          to={channelId ? `/talents/${channelId}` : "/"}
-          className="text-sm text-gray-400 hover:text-white transition-colors"
-        >
-          ← Back
-        </Link>
-      </div>
-
       {/* Main content */}
       <div className="flex flex-1 flex-col lg:flex-row">
         {/* Player */}
-        <div className={`flex flex-col p-4 ${isLive ? "lg:flex-1" : "w-full"}`}>
-          <div
-            className="relative w-full h-full"
-            style={{ paddingTop: isLive ? undefined : "56.25%" }}
-          >
+        <div className={`flex flex-col ${isLive ? "lg:flex-1" : "w-full"}`}>
+          <div className="px-6 pt-4 pb-2">
+            <Link
+              to={channelId ? `/talents/${channelId}` : "/"}
+              className="text-sm text-gray-400 hover:text-white transition-colors"
+            >
+              ← Back
+            </Link>
+          </div>
+          <div className="px-6 pb-6">
             {isLive ? (
               <iframe
                 src={embedUrl}
-                className="w-full h-full min-h-[60vh] rounded-xl"
+                className="w-full min-h-[60vh] rounded-xl"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 allowFullScreen
               />
             ) : (
-              <iframe
-                src={embedUrl}
-                className="absolute inset-0 w-full h-full rounded-xl"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen
-              />
+              <div className="relative w-full" style={{ paddingTop: "56.25%" }}>
+                <iframe
+                  src={embedUrl}
+                  className="absolute inset-0 w-full h-full rounded-xl"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                />
+              </div>
             )}
           </div>
         </div>
@@ -55,7 +52,7 @@ export default function WatchPage() {
             </div>
             <iframe
               src={chatUrl}
-              className="w-full flex-1 min-h-[400px] lg:min-h-0 lg:h-full"
+              className="w-full flex-1 min-h-[400px] lg:min-h-0 lg:h-[calc(100vh-4rem)]"
             />
           </div>
         )}
