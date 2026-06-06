@@ -1,5 +1,10 @@
 import { useParams, Link } from "react-router-dom";
-import { useChannel, useInfiniteVideos } from "@/hooks/useHolodex";
+import {
+  useChannel,
+  useInfiniteVideos,
+  useChannelLiveStatus,
+} from "@/hooks/useHolodex";
+import LiveBanner from "@/components/talent/LiveBanner";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import VideoCard from "@/components/talent/VideoCard";
@@ -115,6 +120,11 @@ export default function TalentDetailPage() {
     );
   }
 
+  const { data: liveStatus = [] } = useChannelLiveStatus(channelId!);
+
+  const liveStream = liveStatus.find((v) => v.status === "live");
+  const upcomingStream = liveStatus.find((v) => v.status === "upcoming");
+
   if (!channel) {
     return (
       <div className="max-w-screen-xl mx-auto px-6 py-8">
@@ -182,6 +192,14 @@ export default function TalentDetailPage() {
           </div>
         </div>
       </div>
+
+      {/* Live / Upcoming banners */}
+      {(liveStream || upcomingStream) && (
+        <div className="space-y-3">
+          {liveStream && <LiveBanner video={liveStream} />}
+          {upcomingStream && <LiveBanner video={upcomingStream} />}
+        </div>
+      )}
 
       {/* Tabs */}
       <Tabs defaultValue="streams">

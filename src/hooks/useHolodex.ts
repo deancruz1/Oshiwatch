@@ -83,3 +83,14 @@ export function useInfiniteVideos(params: VideosParams = {}) {
     enabled: Object.keys(params).length > 0,
   });
 }
+
+export function useChannelLiveStatus(channelId: string) {
+  return useQuery({
+    queryKey: ["live", "channel", channelId],
+    queryFn: () =>
+      getLiveVideos({ channel_id: channelId, include: "live_info" }),
+    refetchInterval: 5 * 60 * 1000,
+    staleTime: 60 * 1000,
+    enabled: !!channelId,
+  });
+}
