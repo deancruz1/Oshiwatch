@@ -10,7 +10,7 @@ export default function WatchPage() {
   const chatUrl = `https://www.youtube.com/live_chat?v=${videoId}&embed_domain=oshiwatch.vercel.app`;
 
   return (
-    <div className="h-[calc(100vh-4rem)] flex flex-col">
+    <div className="min-h-[calc(100vh-4rem)] flex flex-col bg-gray-950">
       {/* Back nav */}
       <div className="px-4 py-2 border-b border-white/10 flex items-center gap-3 flex-shrink-0">
         <Link
@@ -22,24 +22,24 @@ export default function WatchPage() {
       </div>
 
       {/* Main content */}
-      <div className="flex flex-1 overflow-hidden">
-        {/* Player */}
-        <div
-          className={`flex flex-col flex-1 ${isLive ? "lg:w-[calc(100%-380px)]" : "w-full"}`}
-        >
-          <div className="relative w-full" style={{ paddingTop: "56.25%" }}>
-            <iframe
-              src={embedUrl}
-              className="absolute inset-0 w-full h-full"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowFullScreen
-            />
+      <div className="flex flex-1 flex-col lg:flex-row overflow-hidden">
+        {/* Player side */}
+        <div className="flex-1 flex flex-col justify-start p-4">
+          <div className="w-full max-w-4xl mx-auto">
+            <div className="relative w-full" style={{ paddingTop: "56.25%" }}>
+              <iframe
+                src={embedUrl}
+                className="absolute inset-0 w-full h-full rounded-xl"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+              />
+            </div>
           </div>
         </div>
 
-        {/* Live chat — only for live streams */}
+        {/* Live chat */}
         {isLive && (
-          <div className="hidden lg:flex flex-col w-[380px] flex-shrink-0 border-l border-white/10">
+          <div className="flex flex-col w-full lg:w-[360px] flex-shrink-0 border-t lg:border-t-0 lg:border-l border-white/10 h-[400px] lg:h-auto">
             <div className="px-4 py-2 border-b border-white/10 flex-shrink-0">
               <p className="text-xs text-gray-400 font-medium">Live Chat</p>
             </div>
