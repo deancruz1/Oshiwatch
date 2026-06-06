@@ -9,7 +9,7 @@ const BRANCHES: { label: string; value: Branch }[] = [
   { label: "DEV_IS", value: "DEV_IS" },
 ];
 
-const ALL_BRANCHES: Branch[] = ["EN", "JP", "ID", "DEV_IS"];
+export const ALL_BRANCHES: Branch[] = ["EN", "JP", "ID", "DEV_IS"];
 
 interface BranchFilterProps {
   selected: Branch[];
@@ -24,23 +24,31 @@ export default function BranchFilter({
 
   function handleClick(branch: Branch) {
     if (allSelected) {
-      // First click from all-selected state: isolate this branch
       onChange([branch]);
     } else if (selected.includes(branch)) {
-      // Deselecting — if it's the last one, reset to all
       if (selected.length === 1) {
         onChange(ALL_BRANCHES);
       } else {
         onChange(selected.filter((b) => b !== branch));
       }
     } else {
-      // Add to selection
       onChange([...selected, branch]);
     }
   }
 
   return (
     <div className="flex gap-2 flex-wrap">
+      <button
+        onClick={() => onChange(ALL_BRANCHES)}
+        className={cn(
+          "px-3 py-1 rounded-full text-xs font-semibold border transition-all duration-150",
+          allSelected
+            ? "bg-white text-black border-white"
+            : "bg-transparent text-gray-400 border-white/20 hover:border-white/50 hover:text-white",
+        )}
+      >
+        All
+      </button>
       {BRANCHES.map(({ label, value }) => {
         const active = selected.includes(value);
         return (
