@@ -27,14 +27,25 @@ export default function HomePage() {
   const upcomingVideos = filtered.filter((v: Video) => v.status === "upcoming");
   console.log("total live+upcoming:", videos.length);
   console.log(
-    "live:",
-    liveVideos.length,
-    "upcoming:",
-    upcomingVideos.length,
-    "filtered out:",
-    videos.length - filtered.length,
+    "filtered out channels:",
+    videos
+      .filter((v) => {
+        const name = (v.channel.name ?? "").toLowerCase();
+        const suborg = (v.channel.suborg ?? "").toLowerCase();
+        const org = (v.channel.org ?? "").toLowerCase();
+        return (
+          org !== "hololive" ||
+          name.includes("holostars") ||
+          suborg.includes("holostars")
+        );
+      })
+      .map((v) => ({
+        title: v.title,
+        channel: v.channel.name,
+        org: v.channel.org,
+        suborg: v.channel.suborg,
+      })),
   );
-
   return (
     <div className="max-w-screen-2xl mx-auto px-6 py-8 space-y-10">
       {/* Header + filters */}
