@@ -26,6 +26,14 @@ export default function HomePage() {
   const liveVideos = filtered.filter((v: Video) => v.status === "live");
   const upcomingVideos = filtered.filter((v: Video) => v.status === "upcoming");
   console.log("total live+upcoming:", videos.length);
+  console.log(
+    "live:",
+    liveVideos.length,
+    "upcoming:",
+    upcomingVideos.length,
+    "filtered out:",
+    videos.length - filtered.length,
+  );
 
   return (
     <div className="max-w-screen-2xl mx-auto px-6 py-8 space-y-10">
