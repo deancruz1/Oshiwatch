@@ -1,5 +1,4 @@
 import { useParams, useSearchParams, Link } from "react-router-dom";
-import { useVideos } from "@/hooks/useHolodex";
 
 export default function WatchPage() {
   const { videoId } = useParams<{ videoId: string }>();
