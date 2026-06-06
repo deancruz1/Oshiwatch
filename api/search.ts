@@ -32,6 +32,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   try {
     const body = await parseBody(req);
+    console.log("parsed body:", JSON.stringify(body));
+    console.log("body type:", typeof body);
 
     const response = await fetch(`${HOLODEX_BASE}/search/video`, {
       method: "POST",
