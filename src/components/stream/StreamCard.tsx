@@ -1,6 +1,7 @@
 import type { Video } from "@/types/holodex";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
+import { Link } from "react-router-dom";
 
 interface StreamCardProps {
   video: Video;
@@ -36,14 +37,11 @@ function getBranchColor(channel: { name?: string; suborg?: string }): string {
 export default function StreamCard({ video }: StreamCardProps) {
   const isLive = video.status === "live";
   const thumbnail = `https://img.youtube.com/vi/${video.id}/mqdefault.jpg`;
-  const watchUrl = `https://www.youtube.com/watch?v=${video.id}`;
   const scheduledTime = video.start_scheduled ?? video.available_at;
 
   return (
-    <a
-      href={watchUrl}
-      target="_blank"
-      rel="noopener noreferrer"
+    <Link
+      to={`/watch/${video.id}`}
       className="group block rounded-xl overflow-hidden bg-white/5 border border-white/10 hover:border-white/25 transition-all duration-200 hover:-translate-y-0.5 cursor-pointer"
     >
       {/* Thumbnail */}
@@ -91,6 +89,6 @@ export default function StreamCard({ video }: StreamCardProps) {
           </div>
         </div>
       </div>
-    </a>
+    </Link>
   );
 }

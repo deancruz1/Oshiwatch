@@ -1,4 +1,5 @@
 import type { Video } from "@/types/holodex";
+import { Link } from "react-router-dom";
 
 function formatDuration(seconds: number): string {
   if (!seconds) return "";
@@ -25,13 +26,10 @@ interface VideoCardProps {
 
 export default function VideoCard({ video }: VideoCardProps) {
   const thumbnail = `https://img.youtube.com/vi/${video.id}/mqdefault.jpg`;
-  const watchUrl = `https://www.youtube.com/watch?v=${video.id}`;
 
   return (
-    <a
-      href={watchUrl}
-      target="_blank"
-      rel="noopener noreferrer"
+    <Link
+      to={`/watch/${video.id}`}
       className="group block rounded-xl overflow-hidden bg-white/5 border border-white/10 hover:border-white/25 hover:-translate-y-0.5 transition-all duration-200"
     >
       {/* Thumbnail */}
@@ -58,6 +56,6 @@ export default function VideoCard({ video }: VideoCardProps) {
           {formatDate(video.published_at ?? video.available_at)}
         </p>
       </div>
-    </a>
+    </Link>
   );
 }

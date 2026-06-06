@@ -1,4 +1,5 @@
 import type { Video } from "@/types/holodex";
+import { Link } from "react-router-dom";
 
 function formatViewers(count: number): string {
   if (count >= 1000) return `${(count / 1000).toFixed(1)}K watching`;
@@ -23,14 +24,11 @@ interface LiveBannerProps {
 export default function LiveBanner({ video }: LiveBannerProps) {
   const isLive = video.status === "live";
   const thumbnail = `https://img.youtube.com/vi/${video.id}/mqdefault.jpg`;
-  const watchUrl = `https://www.youtube.com/watch?v=${video.id}`;
   const scheduledTime = video.start_scheduled ?? video.available_at;
 
   return (
-    <a
-      href={watchUrl}
-      target="_blank"
-      rel="noopener noreferrer"
+    <Link
+      to={`/watch/${video.id}?from=${video.channel.id}&live=${isLive}`}
       className="group block rounded-xl overflow-hidden border transition-all duration-200 hover:-translate-y-0.5 hover:border-white/25"
       style={{
         background: isLive
@@ -91,6 +89,6 @@ export default function LiveBanner({ video }: LiveBannerProps) {
           </span>
         </div>
       </div>
-    </a>
+    </Link>
   );
 }
