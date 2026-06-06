@@ -22,28 +22,41 @@ export default function WatchPage() {
       </div>
 
       {/* Main content */}
-      <div className="flex flex-1 flex-col lg:flex-row overflow-hidden">
-        {/* Player side */}
-        <div className="flex-1 flex flex-col justify-start p-4">
-          <div className="w-full max-w-4xl mx-auto">
-            <div className="relative w-full" style={{ paddingTop: "56.25%" }}>
+      <div className="flex flex-1 flex-col lg:flex-row">
+        {/* Player */}
+        <div className={`flex flex-col p-4 ${isLive ? "lg:flex-1" : "w-full"}`}>
+          <div
+            className="relative w-full h-full"
+            style={{ paddingTop: isLive ? undefined : "56.25%" }}
+          >
+            {isLive ? (
+              <iframe
+                src={embedUrl}
+                className="w-full h-full min-h-[60vh] rounded-xl"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+              />
+            ) : (
               <iframe
                 src={embedUrl}
                 className="absolute inset-0 w-full h-full rounded-xl"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 allowFullScreen
               />
-            </div>
+            )}
           </div>
         </div>
 
         {/* Live chat */}
         {isLive && (
-          <div className="flex flex-col w-full lg:w-[360px] flex-shrink-0 border-t lg:border-t-0 lg:border-l border-white/10 h-[400px] lg:h-auto">
+          <div className="flex flex-col w-full lg:w-[380px] flex-shrink-0 border-t lg:border-t-0 lg:border-l border-white/10">
             <div className="px-4 py-2 border-b border-white/10 flex-shrink-0">
               <p className="text-xs text-gray-400 font-medium">Live Chat</p>
             </div>
-            <iframe src={chatUrl} className="flex-1 w-full" />
+            <iframe
+              src={chatUrl}
+              className="w-full flex-1 min-h-[400px] lg:min-h-0 lg:h-full"
+            />
           </div>
         )}
       </div>

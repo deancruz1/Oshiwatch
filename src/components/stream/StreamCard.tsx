@@ -41,7 +41,7 @@ export default function StreamCard({ video }: StreamCardProps) {
 
   return (
     <Link
-      to={`/watch/${video.id}`}
+      to={`/watch/${video.id}?from=${video.channel.id}&live=${video.status === "live"}`}
       className="group block rounded-xl overflow-hidden bg-white/5 border border-white/10 hover:border-white/25 transition-all duration-200 hover:-translate-y-0.5 cursor-pointer"
     >
       {/* Thumbnail */}
