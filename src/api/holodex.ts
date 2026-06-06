@@ -60,22 +60,3 @@ export async function getVideos(params: VideosParams = {}): Promise<Video[]> {
     params as Record<string, string | number>,
   );
 }
-
-export async function searchVideos(body: {
-  q?: string;
-  channel_id?: string[];
-  target?: string[];
-  topic?: string[];
-  offset?: number;
-  limit?: number;
-}): Promise<Video[]> {
-  const bodyPayload = JSON.stringify(body);
-  console.log("search body:", bodyPayload);
-  const res = await fetch("/api/search", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(body),
-  });
-  if (!res.ok) throw new Error(`Search error: ${res.status}`);
-  return res.json();
-}
