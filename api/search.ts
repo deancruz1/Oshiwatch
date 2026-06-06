@@ -43,6 +43,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     });
 
     const text = await response.text();
+    console.log("holodex raw response:", response.status, text.slice(0, 500));
 
     if (!response.ok) {
       return res
