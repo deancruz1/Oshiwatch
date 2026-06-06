@@ -3,10 +3,10 @@ import { Link, NavLink } from "react-router-dom";
 export default function Navbar() {
   return (
     <header className="sticky top-0 z-50 w-full border-b border-white/10 bg-gray-950/80 backdrop-blur-md">
-      <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between">
+      <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
         <Link
           to="/"
-          className="font-bold text-base tracking-tight text-white hover:opacity-80 transition-opacity"
+          className="font-bold text-lg tracking-tight text-white hover:opacity-80 transition-opacity"
         >
           Oshiwatch
         </Link>
@@ -16,7 +16,7 @@ export default function Navbar() {
             to="/"
             end
             className={({ isActive }) =>
-              `px-3 py-1.5 rounded-lg text-sm transition-colors ${
+              `px-4 py-2 rounded-lg text-sm transition-colors ${
                 isActive
                   ? "text-white bg-white/10"
                   : "text-gray-400 hover:text-white hover:bg-white/5"
@@ -28,7 +28,7 @@ export default function Navbar() {
           <NavLink
             to="/talents"
             className={({ isActive }) =>
-              `px-3 py-1.5 rounded-lg text-sm transition-colors ${
+              `px-4 py-2 rounded-lg text-sm transition-colors ${
                 isActive
                   ? "text-white bg-white/10"
                   : "text-gray-400 hover:text-white hover:bg-white/5"
