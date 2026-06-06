@@ -33,7 +33,7 @@ export default function TalentCard({
         <img
           src={LOCAL_TALENT_IMAGES[channel.id] ?? channel.photo}
           alt={channel.english_name ?? channel.name}
-          className="w-16 h-16 rounded-full object-cover"
+          className="w-24 h-24 rounded-full object-cover"
           loading="lazy"
           onError={(e) => {
             if (LOCAL_TALENT_IMAGES[channel.id]) {
@@ -43,8 +43,8 @@ export default function TalentCard({
           }}
         />
         {isLive && (
-          <span className="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-red-500 border-2 border-gray-950 flex items-center justify-center">
-            <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
+          <span className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-red-500 border-2 border-gray-950 flex items-center justify-center">
+            <span className="w-2 h-2 rounded-full bg-white animate-pulse" />
           </span>
         )}
       </div>

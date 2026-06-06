@@ -17,7 +17,9 @@ export default function TalentsPage() {
   const { data: channels = [], isLoading } = useAllChannels();
   const { data: liveVideos = [] } = useLiveVideos({ org: "Hololive" });
 
-  const liveChannelIds = new Set(liveVideos.map((v) => v.channel.id));
+  const liveChannelIds = new Set(
+    liveVideos.filter((v) => v.status === "live").map((v) => v.channel.id),
+  );
 
   const filtered = sortChannelsByGen(
     filterChannelsByBranch(channels, selectedBranches).filter((c) => {
@@ -55,7 +57,7 @@ export default function TalentsPage() {
       )}
 
       {isLoading ? (
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-3">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
           {Array.from({ length: 24 }).map((_, i) => (
             <div
               key={i}
