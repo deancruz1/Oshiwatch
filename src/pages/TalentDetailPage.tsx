@@ -18,6 +18,7 @@ export default function TalentDetailPage() {
   const { channelId } = useParams<{ channelId: string }>();
 
   const { data: channel, isLoading: channelLoading } = useChannel(channelId!);
+  const { data: liveStatus = [] } = useChannelLiveStatus(channelId!);
 
   const {
     data: streamsData,
@@ -61,6 +62,9 @@ export default function TalentDetailPage() {
     channel_id: channelId,
     topic: "Music_Cover",
   });
+
+  const liveStream = liveStatus.find((v) => v.status === "live");
+  const upcomingStream = liveStatus.find((v) => v.status === "upcoming");
 
   const allStreamVideos = streamsData?.pages.flat() ?? [];
   const allShortsVideos = shortsData?.pages.flat() ?? [];
@@ -119,11 +123,6 @@ export default function TalentDetailPage() {
       </div>
     );
   }
-
-  const { data: liveStatus = [] } = useChannelLiveStatus(channelId!);
-
-  const liveStream = liveStatus.find((v) => v.status === "live");
-  const upcomingStream = liveStatus.find((v) => v.status === "upcoming");
 
   if (!channel) {
     return (
