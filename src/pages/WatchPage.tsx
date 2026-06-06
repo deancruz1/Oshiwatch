@@ -41,13 +41,18 @@ export default function WatchPage() {
               allowFullScreen
             />
           ) : (
-            <div className="relative w-full" style={{ paddingTop: "56.25%" }}>
-              <iframe
-                src={embedUrl}
-                className="absolute inset-0 w-full h-full"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen
-              />
+            <div className="flex flex-1 items-center justify-center p-6">
+              <div
+                className="relative w-full max-w-5xl"
+                style={{ paddingTop: "min(56.25%, calc(100vh - 12rem))" }}
+              >
+                <iframe
+                  src={embedUrl}
+                  className="absolute inset-0 w-full h-full rounded-xl"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                />
+              </div>
             </div>
           )}
         </div>
